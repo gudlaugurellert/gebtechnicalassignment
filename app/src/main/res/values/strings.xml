@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">GEBTechnicalAssignment</string>
+    <string name="insert_quote_here">Insert fetched quote here</string>
+    <string name="get_new_random_quote">Get new random quote</string>
+    <string name="email_this_quote">Email this quote</string>
 </resources>
