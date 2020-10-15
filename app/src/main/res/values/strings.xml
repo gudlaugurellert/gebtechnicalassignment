@@ -8,4 +8,5 @@
     <string name="email_this_quote">Email this quote</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="fetching_new_quote">Please wait</string>
+    <string name="error_no_internet_access">You are not connected to the internet. Please connect before trying again.</string>
 </resources>

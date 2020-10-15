@@ -1,6 +1,5 @@
 package com.gullielli.gebtechnicalassignment.model
 
-// Quotes
 data class QuoteResponse(
 
     val contents: Contents,

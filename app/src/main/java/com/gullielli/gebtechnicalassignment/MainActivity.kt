@@ -32,12 +32,19 @@ class MainActivity : AppCompatActivity() {
         val doWeHaveInternetAccess = CheckNetwork()
         val repository = Repository()
         val viewModelFactory = MainViewModelFactory(repository)
-        val internetCheck = doWeHaveInternetAccess.isNetworkAvail(this)
+        var internetCheck: Boolean
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         getRandomQuoteBtn.setOnClickListener {
-            getNewRandomQuote(categories.random())
+
+            internetCheck = doWeHaveInternetAccess.isNetworkAvail(this)
+
+            if(!internetCheck) {
+                noInternetAccess()
+            } else {
+                getNewRandomQuote(categories.random())
+            }
         }
 
         emailQuoteBtn.setOnClickListener {
@@ -54,6 +61,13 @@ class MainActivity : AppCompatActivity() {
                 failedResponse()
             }
         })
+    }
+
+    private fun noInternetAccess() {
+        titleTV.text = ""
+        quoteTV.setTextColor(Color.BLACK)
+        quoteTV.text = getString(R.string.error_no_internet_access)
+        authorTV.text = ""
     }
 
     private fun getNewRandomQuote(categories: String) {
