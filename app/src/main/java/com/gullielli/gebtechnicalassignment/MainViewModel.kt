@@ -10,15 +10,6 @@ import retrofit2.Response
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
-//    val quoteResponse: MutableLiveData<Response<QuoteResponse>> = MutableLiveData()
-//    fun getQuotes() {
-//        viewModelScope.launch {
-//
-//            val response = repository.getQuotes()
-//            quoteResponse.value = response
-//        }
-//    }
-
     val randomQuoteResponse: MutableLiveData<Response<QuoteResponse?>> = MutableLiveData()
     fun mainMVGetRandomQuote(category: String?) {
         viewModelScope.launch {

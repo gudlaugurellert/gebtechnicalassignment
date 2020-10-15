@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity() {
 
     // TODO CREATE BASE ACTIVITY
 
-
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,21 +22,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
-//        viewModel.getQuotes()
-//
-//        viewModel.quoteResponse.observe(this, Observer { response ->
-//            // lets see if this works
-//            if (response.isSuccessful) {
-//                Log.d("reply", response.body()?.contents?.quotes?.get(0).toString())
-//            } else {
-//                Log.d("reply", "failed..")
-//            }
-//        })
-
         viewModel.mainMVGetRandomQuote("management")
 
         viewModel.randomQuoteResponse.observe(this, Observer { response ->
-            // lets see if this works
+
             if (response.isSuccessful) {
                 Log.d("reply", response.body()?.contents?.quotes?.get(0).toString())
                 Log.d("reply title", response.body()?.contents?.quotes?.get(0)?.title.toString())

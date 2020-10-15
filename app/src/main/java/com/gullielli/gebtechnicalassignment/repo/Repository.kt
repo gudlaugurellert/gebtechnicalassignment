@@ -6,10 +6,6 @@ import retrofit2.Response
 
 class Repository {
 
-//    suspend fun getQuotes(): Response<QuoteResponse> {
-//        return APIManager.api.getQuotes()
-//    }
-
     suspend fun repoGetRandomQuote(category: String?): Response<QuoteResponse?> {
         return APIManager.api.apiGetRandomQuote(category)
     }

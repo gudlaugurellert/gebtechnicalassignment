@@ -8,6 +8,5 @@ class MainViewModelFactory(private val repository: Repository) : ViewModelProvid
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
 
         return MainViewModel(repository) as T
-
     }
 }
