@@ -6,12 +6,15 @@
     <string name="click_button_below">Click the button below to get a random quote</string>
     <string name="get_new_random_quote">Get new random quote</string>
     <string name="email_this_quote">Email this quote</string>
-    <string name="something_went_wrong">Something went wrong</string>
+    <string name="something_went_wrong">Something went wrong fetching quotes...</string>
+    <string name="press_get_quotes_first">You gotta get some quotes first buddy!</string>
     <string name="fetching_new_quote">Please wait</string>
     <string name="error_no_internet_access">You are not connected to the internet. Please connect before trying again.</string>
     <string name="enter_email">Enter email address</string>
     <string name="add_email">Add email</string>
+    <string name="add_another_email">Add another email</string>
     <string name="cancel_adding_email">Cancel</string>
+    <string name="multiple_email_address_list">Note: You can press the Add email button multiple times</string>
     <string name="done_adding_email">Send email\n(opens in email client)</string>
     <string name="email_address_list">Email address list</string>
 </resources>

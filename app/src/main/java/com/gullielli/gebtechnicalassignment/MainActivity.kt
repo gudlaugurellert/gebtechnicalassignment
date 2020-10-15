@@ -22,14 +22,16 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
-    // TODO CREATE BASE ACTIVITY
-
     private lateinit var viewModel: MainViewModel
+
+    // Using this to check for illegal characters when entering email address
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
     // Quote of the Day categories
-    // TODO IF TIME, MAKE IT NOT HARDCODED
     private val categories = listOf("inspire","management","sports","life","funny","love","art","students")
+
+    // Using this flag to check if the user has pressed the get random quote first, before pressing the email this quote
+    private var quoteFlag: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,24 +53,42 @@ class MainActivity : AppCompatActivity() {
 
         getRandomQuoteBtn.setOnClickListener {
 
+            // Everytime the user presses the get quote button we check if there is internet access.
             internetCheck = doWeHaveInternetAccess.isNetworkAvail(this)
 
             if(!internetCheck) {
+
+                // If there is no internet access, run this function
                 noInternetAccess()
             } else  {
+
+                // There is internet so go ahead and get a new random quote.
                 getNewRandomQuote(categories.random())
             }
         }
 
         emailQuoteBtn.setOnClickListener {
 
+            // Everytime the user presses the get email button we check if there is internet access.
             internetCheck = doWeHaveInternetAccess.isNetworkAvail(this)
 
-            if(!internetCheck) {
-                noInternetAccess()
-            } else if (authorTV.equals("")) {
-                failedResponse()
+            println("** author tv?? "+authorTV.text)
+
+            // Check if there is no internet or if no quotes have been fetched yet..
+            if(!internetCheck || !quoteFlag) {
+
+                // If there is no internet access, run this function
+                if(!internetCheck) {
+                    noInternetAccess()
+                }
+
+                // If no quotes have been fetched run this function
+                if(!quoteFlag) {
+                    failedResponse("noQuoteFetched")
+                }
+
             } else {
+                // If both internetCheck and quoteFlag return true then go ahead and open the add email prompt
                 addEmailAddresses()
             }
         }
@@ -76,9 +96,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.randomQuoteResponse.observe(this, Observer { response ->
 
             if (response.isSuccessful) {
+                quoteFlag = true
                 successfulResponse(response)
             } else {
-                failedResponse()
+                failedResponse("errorFetchingQuotes")
             }
         })
     }
@@ -105,8 +126,12 @@ class MainActivity : AppCompatActivity() {
         authorTV.text = response.body()?.contents?.quotes?.get(0)?.author.toString()
     }
 
-    private fun failedResponse() {
-        quoteTV.text = getString(R.string.something_went_wrong)
+    private fun failedResponse(sourceOfFailure: String) {
+
+        when(sourceOfFailure) {
+            "noQuoteFetched" -> quoteTV.text = getString(R.string.press_get_quotes_first)
+            "errorFetchingQuotes" -> quoteTV.text = getString(R.string.something_went_wrong)
+        }
     }
 
     private fun addEmailAddresses()  {
@@ -139,11 +164,13 @@ class MainActivity : AppCompatActivity() {
                 mDialogView.emailAddressToSend.text = email
 
                 mDialogView.dialogEmailET.text.clear()
+                mDialogView.dialogAddEmailBtn.text = getString(R.string.add_another_email)
 
             } else {
+                // If there are illegal chars in the email address then display this message
 
                 // Known bug, and unfortunately don't have time to fix
-                // The bug happens when entering .com.au email address, or any email addresses with two .
+                // A bug happens when entering .com.au email address, or any email addresses with a second level domain ...
                 val t = Toast.makeText(this, "Invalid email address", Toast.LENGTH_LONG)
                 t.setGravity(Gravity.CENTER, 0, 0)
                 t.show()

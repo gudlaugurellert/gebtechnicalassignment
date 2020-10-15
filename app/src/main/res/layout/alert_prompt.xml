@@ -6,6 +6,13 @@
     android:orientation="vertical"
     android:padding="10dp">
 
+    <TextView
+        android:id="@+id/emailAddressHelper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x2_size"
+        android:text="@string/multiple_email_address_list"/>
+
     <EditText
         android:id="@+id/dialogEmailET"
         android:hint="@string/enter_email"
