@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gullielli.gebtechnicalassignment.model.QuoteResponse
 import com.gullielli.gebtechnicalassignment.repo.Repository
+import com.gullielli.gebtechnicalassignment.util.CheckNetwork
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Response
 
@@ -16,6 +17,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
 
+    // Quote of the Day categories
+    // TODO IF TIME, MAKE IT NOT HARDCODED
     private val categories = listOf("inspire","management","sports","life","funny","love","art","students")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,8 +29,10 @@ class MainActivity : AppCompatActivity() {
         titleTV.text = ""
         authorTV.text = ""
 
+        val doWeHaveInternetAccess = CheckNetwork()
         val repository = Repository()
         val viewModelFactory = MainViewModelFactory(repository)
+        val internetCheck = doWeHaveInternetAccess.isNetworkAvail(this)
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
@@ -37,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
         emailQuoteBtn.setOnClickListener {
             // do something
+            // call the phone's mail client and send email there?
+            // ...or send email from within the app... decisions decisions...
         }
 
         viewModel.randomQuoteResponse.observe(this, Observer { response ->
@@ -44,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             if (response.isSuccessful) {
                 successfulResponse(response)
             } else {
-                failedResponse(response)
+                failedResponse()
             }
         })
     }
@@ -64,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         authorTV.text = response.body()?.contents?.quotes?.get(0)?.author.toString()
     }
 
-    private fun failedResponse(response: Response<QuoteResponse?>) {
+    private fun failedResponse() {
         quoteTV.text = getString(R.string.something_went_wrong)
     }
 }
