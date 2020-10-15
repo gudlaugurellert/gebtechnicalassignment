@@ -34,12 +34,14 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        })
 
-        viewModel.mainMVGetRandomQuote("funny")
+        viewModel.mainMVGetRandomQuote("management")
 
         viewModel.randomQuoteResponse.observe(this, Observer { response ->
             // lets see if this works
             if (response.isSuccessful) {
                 Log.d("reply", response.body()?.contents?.quotes?.get(0).toString())
+                Log.d("reply title", response.body()?.contents?.quotes?.get(0)?.title.toString())
+                Log.d("reply quote", response.body()?.contents?.quotes?.get(0)?.quote.toString())
             } else {
                 Log.d("reply", "failed..")
             }
