@@ -10,7 +10,11 @@ import retrofit2.http.Headers
 import retrofit2.http.Query
 
 interface API {
+//    @Headers("$API_KEY:$API_KEY_VALUE")
+//    @GET(QOD_CATEGORY)
+//    suspend fun getQuotes(): Response<QuoteResponse>
+
     @Headers("$API_KEY:$API_KEY_VALUE")
     @GET(QOD_CATEGORY)
-    suspend fun getQuotes(): Response<QuoteResponse>
+    suspend fun apiGetRandomQuote (@Query("category") category: String?): Response<QuoteResponse?>
 }

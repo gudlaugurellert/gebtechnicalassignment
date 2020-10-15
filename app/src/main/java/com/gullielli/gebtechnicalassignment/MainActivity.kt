@@ -23,9 +23,20 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
-        viewModel.getQuotes()
+//        viewModel.getQuotes()
+//
+//        viewModel.quoteResponse.observe(this, Observer { response ->
+//            // lets see if this works
+//            if (response.isSuccessful) {
+//                Log.d("reply", response.body()?.contents?.quotes?.get(0).toString())
+//            } else {
+//                Log.d("reply", "failed..")
+//            }
+//        })
 
-        viewModel.quoteResponse.observe(this, Observer { response ->
+        viewModel.mainMVGetRandomQuote("funny")
+
+        viewModel.randomQuoteResponse.observe(this, Observer { response ->
             // lets see if this works
             if (response.isSuccessful) {
                 Log.d("reply", response.body()?.contents?.quotes?.get(0).toString())
