@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.alert_prompt.view.*
 import retrofit2.Response
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
@@ -30,10 +29,12 @@ class MainActivity : AppCompatActivity() {
     // Quote of the Day categories
     private val categories = listOf("inspire","management","sports","life","funny","love","art","students")
 
-    // Using this flag to check if the user has pressed the get random quote first, before pressing the email this quote
+    // Using this flag to check if the user has pressed the get random quote first, before pressing the email this quote button
+    // This flag will be true when there is a successful api call to get quotes
     private var quoteFlag: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
+        // Get Random Quote button
+        // ...first check if there is internet access
+        // ...if there is internet, then go and get a random quote
         getRandomQuoteBtn.setOnClickListener {
 
             // Everytime the user presses the get quote button we check if there is internet access.
@@ -59,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             if(!internetCheck) {
 
                 // If there is no internet access, run this function
+                // ...it simply just updates the text to say there's no internet..
                 noInternetAccess()
             } else  {
 
@@ -67,6 +72,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Email Quote Button
+        // ...first check if there is internet access, or, if the quoteflag is false
+        // ...quoteflag is set to true when there is a successful api call to get a quote for the first time
+        // ...both of these need to be true in order to start the send email flow
         emailQuoteBtn.setOnClickListener {
 
             // Everytime the user presses the get email button we check if there is internet access.
@@ -78,13 +87,15 @@ class MainActivity : AppCompatActivity() {
             if(!internetCheck || !quoteFlag) {
 
                 // If there is no internet access, run this function
+                // ...it simply just updates the text to say there's no internet..
                 if(!internetCheck) {
                     noInternetAccess()
                 }
 
                 // If no quotes have been fetched run this function
+                // ... this lets the user know to press the get quotes button first
                 if(!quoteFlag) {
-                    failedResponse("noQuoteFetched")
+                    somethingFailed("noQuoteFetched")
                 }
 
             } else {
@@ -99,19 +110,27 @@ class MainActivity : AppCompatActivity() {
                 quoteFlag = true
                 successfulResponse(response)
             } else {
-                failedResponse("errorFetchingQuotes")
+                somethingFailed("errorFetchingQuotes")
             }
         })
     }
 
+    // if  there is no internet access then:
+    // ..clear the title and author textfields
+    // ..set the quote textfield color to black and let the user know there is no internet access
     private fun noInternetAccess() {
+
         titleTV.text = ""
         quoteTV.setTextColor(Color.BLACK)
         quoteTV.text = getString(R.string.error_no_internet_access)
         authorTV.text = ""
     }
 
+    // This function gets passed a random category from the categories list defined at the top
+    // the passed category is then used as a parameter to get the quote of the day details for that category
+    // ... mainViewModel -> Repository -> APIManager -> retrofit -> API
     private fun getNewRandomQuote(categories: String) {
+
         titleTV.text = ""
         quoteTV.setTextColor(Color.RED)
         quoteTV.text = getString(R.string.fetching_new_quote)
@@ -119,14 +138,18 @@ class MainActivity : AppCompatActivity() {
         viewModel.mainMVGetRandomQuote(categories)
     }
 
+    // When getNewRandomQuote gets a successful response, this function receives the response
+    // and updates the relevant textfields with the relevant response
     private fun successfulResponse(response: Response<QuoteResponse?>) {
+
         quoteTV.setTextColor(Color.BLUE)
         titleTV.text = response.body()?.contents?.quotes?.get(0)?.title.toString()
         quoteTV.text = response.body()?.contents?.quotes?.get(0)?.quote.toString()
         authorTV.text = response.body()?.contents?.quotes?.get(0)?.author.toString()
     }
 
-    private fun failedResponse(sourceOfFailure: String) {
+    // This function updates the quote text with an appropriate error message to let the user know what happened
+    private fun somethingFailed(sourceOfFailure: String) {
 
         when(sourceOfFailure) {
             "noQuoteFetched" -> quoteTV.text = getString(R.string.press_get_quotes_first)
@@ -134,9 +157,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addEmailAddresses()  {
+    // This function is called when the user presses the Send email button
+    // It will open an alert dialog where the user can enter email addresses
+    private fun addEmailAddresses() {
+
+        // Using this to display the added email addresses in the alert dialog
         var email = ""
 
+        // Using this to add all email addresses into as one big string
+        // ...example: "email@address1.com,email@address2.com,email@address3.com"
         var emailListToSend = ""
 
         //Inflate the dialog with custom alert prompt
@@ -149,9 +178,12 @@ class MainActivity : AppCompatActivity() {
             .setView(mDialogView)
             .setTitle(R.string.add_email)
 
-        //show dialog
         val mAlertDialog = mBuilder.show()
 
+        // When Add Email Button is pressed
+        // ...first check if the email address contains illegal characters defined in emailPattern
+        // .....if there are no illegal characters = take the text input and concatenate into email and emailListToSend variables
+        // .....and clear the text input
         mDialogView.dialogAddEmailBtn.setOnClickListener {
 
             // Super basic validation to check if there are any illegal characters in the email address
@@ -177,18 +209,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Done button
+        // When Done button is pressed
+        // ...first check that the email variable is not emoty
+        // .....if email is not empty, call the openEmailClient function and pass all the necessary information we need to send the email
         mDialogView.dialogDoneBtn.setOnClickListener {
 
-            // If there are no email addresses, then do nothing and display a toast..
             // If there is email address, then open email client and pass the email(s), quote title, quote text and quote author.
             if(!email.equals("")) {
 
-                println(emailListToSend)
                 openEmailClient(emailListToSend, titleTV.text as String, quoteTV.text as String, authorTV.text as String)
 
             } else {
-
+                // If there is no email addresses, then do nothing and display this message
                 val t = Toast.makeText(this, "Don't forget to enter an email address", Toast.LENGTH_LONG)
                 t.setGravity(Gravity.CENTER, 0, 0)
                 t.show()
@@ -202,6 +234,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Not the most elegant way to do this but running out of time.
+    // Create the intent to open the phones' email client
+    // ...put the data we want to pass into the email client = email addresses, quote title, quote text and quote author
     private fun openEmailClient(emailAddresses: String, emailSubject: String, emailQuote: String, emailQuoteAuthor: String) {
 
         val intent = Intent(Intent.ACTION_SENDTO)
@@ -212,9 +246,9 @@ class MainActivity : AppCompatActivity() {
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-            //Log.d("Email error:", e.toString())
-            val t = Toast.makeText(this, "Something went wrong opening your email client..", Toast.LENGTH_LONG)
+//            e.printStackTrace()
+            val errorMsg = e.toString()
+            val t = Toast.makeText(this, "Something went wrong.\n$errorMsg", Toast.LENGTH_LONG)
             t.setGravity(Gravity.CENTER, 0, 0)
             t.show()
         }

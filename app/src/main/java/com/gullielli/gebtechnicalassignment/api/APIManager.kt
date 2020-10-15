@@ -7,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object APIManager {
 
     private val retrofit by lazy {
+
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -14,6 +15,7 @@ object APIManager {
     }
 
     val api: API by lazy {
+
         retrofit.create(API::class.java)
     }
 }
