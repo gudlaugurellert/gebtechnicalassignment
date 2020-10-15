@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gullielli.gebtechnicalassignment.repo.Repository
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,6 +17,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        quoteTV.text = getString(R.string.click_button_below)
+
+        getRandomQuoteBtn.setOnClickListener {
+            println("random btn clicked")
+        }
+
+        emailQuoteBtn.setOnClickListener {
+            println("email btn clicked")
+        }
 
         val repository = Repository()
         val viewModelFactory = MainViewModelFactory(repository)
