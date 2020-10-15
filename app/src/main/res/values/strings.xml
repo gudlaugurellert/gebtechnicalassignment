@@ -9,4 +9,9 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="fetching_new_quote">Please wait</string>
     <string name="error_no_internet_access">You are not connected to the internet. Please connect before trying again.</string>
+    <string name="enter_email">Enter email address</string>
+    <string name="add_email">Add email</string>
+    <string name="cancel_adding_email">Cancel</string>
+    <string name="done_adding_email">Send email\n(opens in email client)</string>
+    <string name="email_address_list">Email address list</string>
 </resources>
