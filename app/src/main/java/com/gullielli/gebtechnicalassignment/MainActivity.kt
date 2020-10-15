@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         quoteTV.text = getString(R.string.click_button_below)
+
+        // Clear the placeholder text
         titleTV.text = ""
         authorTV.text = ""
 
@@ -59,9 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         emailQuoteBtn.setOnClickListener {
-            // do something
-            // call the phone's mail client and send email there?
-            // ...or send email from within the app... decisions decisions...
+
             internetCheck = doWeHaveInternetAccess.isNetworkAvail(this)
 
             if(!internetCheck) {
@@ -112,13 +112,17 @@ class MainActivity : AppCompatActivity() {
     private fun addEmailAddresses()  {
         var email = ""
 
+        var emailListToSend = ""
+
         //Inflate the dialog with custom alert prompt
         val mDialogView = LayoutInflater.from(this).inflate(R.layout.alert_prompt, null)
+
+        // Clear the placeholder text
         mDialogView.emailAddressToSend.text = ""
 
         val mBuilder = AlertDialog.Builder(this)
             .setView(mDialogView)
-            .setTitle("Add email")
+            .setTitle(R.string.add_email)
 
         //show dialog
         val mAlertDialog = mBuilder.show()
@@ -129,16 +133,17 @@ class MainActivity : AppCompatActivity() {
             if (mDialogView.dialogEmailET.text.toString().matches(emailPattern.toRegex())) {
 
                 email += mDialogView.dialogEmailET.text.toString()+"\n"
+
+                emailListToSend += mDialogView.dialogEmailET.text.toString()+","
+
                 mDialogView.emailAddressToSend.text = email
 
                 mDialogView.dialogEmailET.text.clear()
-                // Toast - Don't need to show this message - it's annoying from a user point of view
-//                val t = Toast.makeText(this, "Valid email address", Toast.LENGTH_LONG)
-//                t.setGravity(Gravity.CENTER, 0, 0)
-//                t.show()
 
             } else {
 
+                // Known bug, and unfortunately don't have time to fix
+                // The bug happens when entering .com.au email address, or any email addresses with two .
                 val t = Toast.makeText(this, "Invalid email address", Toast.LENGTH_LONG)
                 t.setGravity(Gravity.CENTER, 0, 0)
                 t.show()
@@ -149,10 +154,14 @@ class MainActivity : AppCompatActivity() {
         mDialogView.dialogDoneBtn.setOnClickListener {
 
             // If there are no email addresses, then do nothing and display a toast..
-            // If there are email address, then open email client and pass the email(s), quote title, quote text and quote author.
+            // If there is email address, then open email client and pass the email(s), quote title, quote text and quote author.
             if(!email.equals("")) {
-                openEmailClient(email, titleTV.text as String, quoteTV.text as String, authorTV.text as String)
+
+                println(emailListToSend)
+                openEmailClient(emailListToSend, titleTV.text as String, quoteTV.text as String, authorTV.text as String)
+
             } else {
+
                 val t = Toast.makeText(this, "Don't forget to enter an email address", Toast.LENGTH_LONG)
                 t.setGravity(Gravity.CENTER, 0, 0)
                 t.show()
@@ -167,14 +176,11 @@ class MainActivity : AppCompatActivity() {
 
     // Not the most elegant way to do this but running out of time.
     private fun openEmailClient(emailAddresses: String, emailSubject: String, emailQuote: String, emailQuoteAuthor: String) {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto: Example@gmail.com")
-        intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_EMAIL, "test")
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Hello World")
-        intent.putExtra(Intent.EXTRA_TEXT, "text body")
 
-        startActivity(intent)
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:$emailAddresses")
+        intent.putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+        intent.putExtra(Intent.EXTRA_TEXT, "Quote:\n$emailQuote\n\nAuthor: $emailQuoteAuthor")
 
         try {
             startActivity(intent)
